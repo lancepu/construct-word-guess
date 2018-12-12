@@ -38,8 +38,6 @@ function startGame(){
         ]) 
         .then (answer => {
             maxRound = parseInt(answer.mr)
-            console.log(round)
-            console.log(maxRound)
             if (maxRound !== 0) initializeWord()
         })
 }
