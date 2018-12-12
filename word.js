@@ -1,9 +1,11 @@
 const Letter = require('./letter')
+const chalk = require('chalk')
 
 const Word = function (word) {
     this.word = word
     this.wordArr = []
     this.displayString = ''
+    this.correctCount = 0
     //split the word into array and construct the letters
     this.generateLetterArr = function() {
         let tempArr = this.word.split('')
@@ -23,8 +25,20 @@ const Word = function (word) {
     }
 
     this.guess = function(inputLetter) {
+        let guessed = 0;
         for (let i = 0; i < this.wordArr.length; i++){
            this.wordArr[i].takeGuess(inputLetter)
+           if (this.wordArr[i].guessed) guessed++
+        }
+        this.checkCorrect(guessed)
+    }
+
+    this.checkCorrect = function(guessedCount) {
+        if (guessedCount > this.correctCount) {
+            this.correctCount = guessedCount
+            console.log(chalk.green("\n-----CORRECT!!!-----\n"))
+        } else {
+            console.log(chalk.red("\n-----INCORRECT!!!-----\n"))
         }
     }
 

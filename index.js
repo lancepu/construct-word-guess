@@ -1,35 +1,19 @@
 const inquirer = require('inquirer')
 const Word = require('./word')
-let wordBank = ['hello', 'my', 'name', 'computer', 'microwave']
-let maxGuess = 10
+const chalk = require('chalk')
+let wordBank = ['hello', 'my', 'name', 'computer', 'microwave', 'gadget', 'helicopter']
+let maxGuess = 15
 let guessedNum = 1
-let winCount
+let winCount = 0
 let wordToGuess
 let randomWord
 let round = 1
-let maxRound = 3
+let maxRound = 5
 
 function getRandomWord(arr){
     randomIndex = Math.floor(Math.random() * arr.length)
     return arr[randomIndex]
 }
-
-// function getGameRound() {
-//     inquirer.prompt([
-//         {
-//             name: 'round',
-//             message: 'how many rounds do you want to play?',
-//             validate: function(value) {
-//                 if (isNaN(value) === false && parseInt(value) <= 5) {
-//                   return true;
-//                 }
-//                 console.log('Enter a number less than 5');
-//               }
-//         }
-//     ]).then(answer => {
-//         return parseInt(answer.round)
-//     })
-// }
 
 function initializeWord(){
     randomWord = getRandomWord(wordBank)
@@ -44,13 +28,14 @@ function startGame(){
 }
 
 function endGame() {
+    console.log (chalk.blue(`Game over, you won ${chalk.green(winCount)} games!!!`))
     inquirer
         .prompt ([
             {
                 name: 'confirm',
                 type: 'list',
                 choices: ['Yes', 'No'],
-                message: 'Game Over. New Game? '
+                message: chalk.blue('New Game? ')
             }
         ])
         .then (answer => {
@@ -58,7 +43,7 @@ function endGame() {
                 round = 1
                 startGame()
             }
-            else console.log('GG, Good Bye!')
+            else console.log(chalk.green('GG, Good Bye!'))
         })
 }
 
@@ -77,28 +62,28 @@ function playGame(){
                         if (value.match(letters) && value.length === 1) {
                           return true;
                         }
-                        console.log('One character letters ONLY');
+                        console.log(chalk.red(' One character letters ONLY'));
                       }
                 }
             ])
             .then (answer => {
                 wordToGuess.guess(answer.guess)
                 wordToGuess.displayLetters()
+
                 if (wordToGuess.checkWin()) {
-                   console.log('Correct')
+                   console.log(chalk.green('\nYou guessed the word!\n'))
+                   winCount++
                    round++
                    guessedNum = 1
                    startGame()
                 }else {
+                    console.log (chalk.blue(`You have ${chalk.green(maxGuess - guessedNum)} guesses left!!!`))
                     guessedNum++
                     playGame()
                 }
             })
-        }
-    } else {
-        console.log('you win!')
-        endGame()
-    }
+        } else endGame()
+    } else endGame()
     
 }
 
