@@ -1,14 +1,15 @@
 const inquirer = require('inquirer')
 const Word = require('./word')
 const chalk = require('chalk')
-let wordBank = ['hello', 'my', 'name', 'computer', 'microwave', 'gadget', 'helicopter']
+let wordBank = ['hello', 'my', 'name', 'computer', 'microwave', 'gadget', 'helicopter', 'boat', 'train', 'plane', 'hawk', 'light', 'chair', 'table', 'cat', 'dog', 'mouse', 'keyboard', 'window', 'door', 'exit', 'poster', 'book']
 let maxGuess = 15
 let guessedNum = 1
 let winCount = 0
 let wordToGuess
 let randomWord
 let round = 1
-let maxRound = 5
+let maxRound = 0
+let gameWordBank
 
 function getRandomWord(arr){
     randomIndex = Math.floor(Math.random() * arr.length)
@@ -16,15 +17,31 @@ function getRandomWord(arr){
 }
 
 function initializeWord(){
-    randomWord = getRandomWord(wordBank)
+    randomWord = getRandomWord(gameWordBank)
+    gameWordBank = gameWordBank.filter(w => w !== randomWord)
     wordToGuess = new Word(randomWord)
     wordToGuess.generateLetterArr()
     wordToGuess.displayLetters()
+    playGame()
 }
 
 function startGame(){
-    initializeWord()
-    playGame()
+    gameWordBank = wordBank
+    inquirer
+        .prompt([
+            {
+                name: 'mr',
+                type: 'list',
+                choices: ["5", "10", "15"],
+                message: chalk.blue('How many words do you want to play? ')
+            }
+        ]) 
+        .then (answer => {
+            maxRound = parseInt(answer.mr)
+            console.log(round)
+            console.log(maxRound)
+            if (maxRound !== 0) initializeWord()
+        })
 }
 
 function endGame() {
@@ -40,6 +57,8 @@ function endGame() {
         ])
         .then (answer => {
             if (answer.confirm === "Yes") {
+                gameWordBank = wordBank
+                guessedNum = 1
                 round = 1
                 startGame()
             }
@@ -75,9 +94,9 @@ function playGame(){
                    winCount++
                    round++
                    guessedNum = 1
-                   startGame()
+                   initializeWord()
                 }else {
-                    console.log (chalk.blue(`You have ${chalk.green(maxGuess - guessedNum)} guesses left!!!`))
+                    console.log (chalk.blue(`\nYou have ${chalk.green(maxGuess - guessedNum)} guesses left!!!\n`))
                     guessedNum++
                     playGame()
                 }
